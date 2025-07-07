@@ -1037,9 +1037,9 @@ test('publishConfigurationForDiscovery should be called as expected for standard
         unique_id: 'ERQ1',
         name: 'ERQ1',
         state_topic: 'teleinfo/012345678912',
-        device_class: 'power',
+        device_class: 'reactive_energy',
         value_template: '{% if \'ERQ1\' in value_json %}{{ value_json.ERQ1.value }}{% endif %}',
-        unit_of_measurement: 'VArh',
+        unit_of_measurement: 'varh',
         device: {
             identifiers: [
                 '012345678912',
@@ -1054,9 +1054,9 @@ test('publishConfigurationForDiscovery should be called as expected for standard
         unique_id: 'ERQ2',
         name: 'ERQ2',
         state_topic: 'teleinfo/012345678912',
-        device_class: 'power',
+        device_class: 'reactive_energy',
         value_template: '{% if \'ERQ2\' in value_json %}{{ value_json.ERQ2.value }}{% endif %}',
-        unit_of_measurement: 'VArh',
+        unit_of_measurement: 'varh',
         device: {
             identifiers: [
                 '012345678912',
@@ -1071,9 +1071,9 @@ test('publishConfigurationForDiscovery should be called as expected for standard
         unique_id: 'ERQ3',
         name: 'ERQ3',
         state_topic: 'teleinfo/012345678912',
-        device_class: 'power',
+        device_class: 'reactive_energy',
         value_template: '{% if \'ERQ3\' in value_json %}{{ value_json.ERQ3.value }}{% endif %}',
-        unit_of_measurement: 'VArh',
+        unit_of_measurement: 'varh',
         device: {
             identifiers: [
                 '012345678912',
@@ -1088,9 +1088,9 @@ test('publishConfigurationForDiscovery should be called as expected for standard
         unique_id: 'ERQ4',
         name: 'ERQ4',
         state_topic: 'teleinfo/012345678912',
-        device_class: 'power',
+        device_class: 'reactive_energy',
         value_template: '{% if \'ERQ4\' in value_json %}{{ value_json.ERQ4.value }}{% endif %}',
-        unit_of_measurement: 'VArh',
+        unit_of_measurement: 'varh',
         device: {
             identifiers: [
                 '012345678912',
@@ -1311,7 +1311,7 @@ test('publishConfigurationForDiscovery should be called as expected for standard
         state_topic: 'teleinfo/012345678912',
         device_class: 'apparent_power',
         value_template: '{% if \'PCOUP\' in value_json %}{{ value_json.PCOUP.value }}{% endif %}',
-        unit_of_measurement: 'kVA',
+        unit_of_measurement: 'VA',
         device: {
             identifiers: [
                 '012345678912',
@@ -1358,7 +1358,7 @@ test('publishConfigurationForDiscovery should be called as expected for standard
         state_topic: 'teleinfo/012345678912',
         device_class: 'apparent_power',
         value_template: '{% if \'PREF\' in value_json %}{{ value_json.PREF.value }}{% endif %}',
-        unit_of_measurement: 'kVA',
+        unit_of_measurement: 'VA',
         device: {
             identifiers: [
                 '012345678912',
@@ -1672,6 +1672,8 @@ test('publishConfigurationForDiscovery should be called as expected for standard
             model: 'teleinfo_012345678912',
             name: 'Teleinfo 012345678912',
         },
+        json_attributes_topic: 'teleinfo/012345678912',
+        json_attributes_template: '{%- if \'STGE\' in value_json -%}\n    {%- set stge = int(value_json.STGE.value, base=16) -%}\n    {%- set tempo_today = (stge // (2**24)) | bitwise_and(3) -%}\n    {%- set tempo_tomorrow = (stge // (2**26)) | bitwise_and(3) -%}\n    {{ {\n        \'contact_sec\': ("on" if (((stge // (2**0)) | bitwise_and(1)) == 0) else "off"),\n        \'organe_de_coupure\': ((stge // (2**1)) | bitwise_and(0b111)) == 0,\n        \'etat_cache_borne_distributeur_closed\': (stge | bitwise_and(0b10000)) == 0,\n        \'overvoltage\': (stge | bitwise_and(0b1000000)) != 0,\n        \'overload\': (stge | bitwise_and(0b10000000)) != 0,\n        \'consuming\': (stge | bitwise_and(0b100000000)) == 0,\n        \'producing\': (stge | bitwise_and(0b100000000)) != 0,\n        \'active_energy_positive\': (stge | bitwise_and(0b1000000000)) == 0,\n        \'idx_tarif_fournisseur\': stge | bitwise_and(0x00003C00)//(2**10),\n        \'idx_tarif_distributeur\': stge | bitwise_and(0x0000C000)//(2**14),\n        \'clock_ok\': (stge | bitwise_and(2**16)) == 0,\n        \'teleinfo_mode\': "historique" if (( stge // (2**17)) | bitwise_and(1) == 0) else "standard",\n        \'euridis_com_enabled\': (stge // (2**19)) | bitwise_and(1) == 1,\n        \'euridis_com_secured\': (stge // (2**20)) | bitwise_and(1) == 1,\n        \'tempo_today\': "bleu" if tempo_today == 0b01 else ("blanc" if tempo_today == 0b10 else ("rouge" if tempo_today == 0b11 else "inconnu")),\n        \'tempo_tomorrow\': "bleu" if tempo_tomorrow == 0b01 else ("blanc" if tempo_tomorrow == 0b10 else ("rouge" if tempo_tomorrow == 0b11 else "inconnu"))\n    } | tojson }}\n    {%- endif -%}',
     }), { retain: true });
 
     expect(mqttClientMock.publish).toHaveBeenNthCalledWith(65, 'homeassistant/sensor/teleinfo/012345678912_umoy1/config', JSON.stringify({
